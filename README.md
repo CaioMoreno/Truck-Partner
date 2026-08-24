@@ -4,7 +4,6 @@
 
 The project combines Python application logic with a relational PostgreSQL database, providing a practical system for organizing trucking operations while enforcing relationships and business rules at the database level.
 
-> **Current version:** `v0.1.0` — PostgreSQL + Python CLI
 
 ---
 
@@ -256,7 +255,6 @@ DB_PORT=5432
 
 Copy `.env.example` to a new `.env` file and replace the example values with your local PostgreSQL configuration.
 
-> **Never commit your `.env` file.** It contains local database credentials and is excluded from version control.
 
 ### 4. Run Truck-Partner
 
