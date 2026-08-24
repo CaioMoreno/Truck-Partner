@@ -5,7 +5,6 @@
 The project combines Python application logic with a relational PostgreSQL database, providing a practical system for organizing trucking operations while enforcing relationships and business rules at the database level.
 
 
----
 
 ## 📌 About the Project
 
