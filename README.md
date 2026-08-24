@@ -25,7 +25,6 @@ The current version allows users to:
 
 The project is designed to evolve incrementally as new backend technologies and concepts are introduced.
 
----
 
 ## ✨ Features
 
@@ -65,7 +64,6 @@ The project is designed to evolve incrementally as new backend technologies and 
 * Display cargoes associated with trips
 * Check total cargo weight against truck capacity
 
----
 
 ## 🧠 Business Logic
 
@@ -91,7 +89,6 @@ This structure allows one trip to contain multiple cargoes while keeping cargo a
 
 The database also provides information for checking whether the combined weight of cargo assigned to a trip exceeds the truck's maximum supported weight.
 
----
 
 ## 🛠️ Technologies
 
@@ -106,7 +103,6 @@ The database also provides information for checking whether the combined weight 
 | Git           | Version control                          |
 | GitHub        | Source code hosting                      |
 
----
 
 ## 📂 Project Structure
 
@@ -155,7 +151,6 @@ Contains cargo CRUD operations.
 **`cli/trips.py`**
 Contains trip creation, cargo assignment, trip details, and weight-checking operations.
 
----
 
 ## 🗄️ Database Model
 
@@ -183,7 +178,6 @@ Junction table connecting trips and cargoes, allowing cargo to be assigned to tr
 
 PostgreSQL views are also used to provide information such as detailed trip data and cargo-weight checks.
 
----
 
 ## 💻 CLI
 
@@ -217,7 +211,6 @@ Trips
 0. Back
 ```
 
----
 
 ## ⚙️ Installation
 
@@ -289,7 +282,6 @@ Automatically fix supported linting issues:
 uv run ruff check --fix .
 ```
 
----
 
 ## 🔐 Security
 
@@ -311,7 +303,6 @@ cur.execute(
 
 This avoids constructing SQL statements directly from user input.
 
----
 
 ## 🗺️ Roadmap
 
@@ -350,7 +341,6 @@ Planned areas of expansion include:
 
 The long-term goal is to evolve Truck-Partner from a CLI database application into a more complete logistics backend system.
 
----
 
 ## 🎯 Project Goals
 
@@ -369,7 +359,6 @@ The project focuses on:
 * Version control
 * Progressive backend architecture
 
----
 
 ## 📄 Version
 
@@ -377,7 +366,6 @@ The project focuses on:
 
 Current stage: **Python CLI + PostgreSQL**
 
----
 
 ## 👨‍💻 Author
 
