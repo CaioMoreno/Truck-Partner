@@ -1,5 +1,5 @@
-from db import get_connection
-from truck_system import TruckSystem
+from cli.db import get_connection
+from cli.truck_system import TruckSystem
 
 
 def main():

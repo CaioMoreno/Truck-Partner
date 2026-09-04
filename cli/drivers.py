@@ -1,6 +1,6 @@
 import psycopg
 
-from db import get_connection
+from cli.db import get_connection
 
 
 def add_driver():
