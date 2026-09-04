@@ -12,6 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.database import Base
 
+#Associative table  that connects what cargoes that trip has or vice versa
 trip_cargo = Table(
     "trip_cargo",
     Base.metadata,

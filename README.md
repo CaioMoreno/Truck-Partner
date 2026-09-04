@@ -1,32 +1,43 @@
 # 🚛 Truck-Partner
 
-**Truck-Partner** is a command-line logistics management system built with **Python and PostgreSQL** for managing drivers, trucks, cargoes, and trips.
+**Truck-Partner** is a logistics management system built with **Python, PostgreSQL, FastAPI, and SQLAlchemy** for managing drivers, trucks, cargoes, and trips.
 
-The project combines Python application logic with a relational PostgreSQL database, providing a practical system for organizing trucking operations while enforcing relationships and business rules at the database level.
-
-
+The project started as a command-line application and is evolving into a full REST API backend, combining relational database design, an ORM data layer, and HTTP endpoints, while keeping the original CLI as a record of the project's evolution.
 
 ## 📌 About the Project
 
-Truck-Partner was created as a practical project for developing and applying skills in **Python, SQL, PostgreSQL, relational database design, Git, and backend development**.
+Truck-Partner was created as a practical project for developing and applying skills in **Python, SQL, PostgreSQL, relational database design, Git, backend development, REST APIs, and ORM-based architecture**.
 
-Instead of treating drivers, trucks, cargoes, and trips as isolated data, the system connects them through relational database structures and provides a CLI for interacting with the data.
+Instead of treating drivers, trucks, cargoes, and trips as isolated data, the system connects them through relational database structures and exposes them both through a CLI and, increasingly, through a FastAPI REST API.
 
-The current version allows users to:
+The project now has two parallel entry points:
 
-* Manage drivers
-* Manage trucks
-* Manage cargoes
-* Create and inspect trips
+* **`cli/`** — the original command-line application (kept as-is, as a record of the project's earlier stage)
+* **`api/`** — the FastAPI + SQLAlchemy REST API, which is the actively evolving part of the project
+
+The current API allows clients to:
+
+* Create and list drivers
+* Create and list trucks
+* Create and list cargoes
+* Create and list trips, with driver, truck, and cargo details
 * Assign cargoes to trips
-* Remove cargoes from trips
-* View detailed trip information
-* Compare cargo weight with truck capacity
 
 The project is designed to evolve incrementally as new backend technologies and concepts are introduced.
 
 
 ## ✨ Features
+
+### 🌐 REST API (FastAPI + SQLAlchemy)
+
+* Create and list drivers, trucks, and cargoes
+* Create and list trips with nested driver, truck, and cargo details
+* Assign cargoes to a trip, preventing duplicate assignments
+* Input validation with Pydantic (e.g., positive weight/capacity, fixed-length CPF and plate)
+* Existence checks for related resources (e.g., a trip cannot be created with a non-existent driver or truck)
+* Auto-generated interactive documentation via Swagger UI (`/docs`)
+
+### 💻 CLI (original entry point)
 
 ### 👤 Driver Management
 
@@ -92,16 +103,20 @@ The database also provides information for checking whether the combined weight 
 
 ## 🛠️ Technologies
 
-| Technology    | Purpose                                  |
-| ------------- | ---------------------------------------- |
-| Python        | Application and CLI logic                |
-| PostgreSQL    | Relational database                      |
-| Psycopg       | Python ↔ PostgreSQL communication        |
-| python-dotenv | Environment variable management          |
-| uv            | Python project and dependency management |
-| Ruff          | Python linting and formatting            |
-| Git           | Version control                          |
-| GitHub        | Source code hosting                      |
+| Technology    | Purpose                                    |
+| ------------- | ------------------------------------------- |
+| Python        | Application, API, and CLI logic            |
+| FastAPI       | REST API framework                         |
+| SQLAlchemy    | ORM and database models                    |
+| Pydantic      | Request/response validation                |
+| Uvicorn       | ASGI server for running the API            |
+| PostgreSQL    | Relational database                        |
+| Psycopg       | Python ↔ PostgreSQL communication (CLI)    |
+| python-dotenv | Environment variable management            |
+| uv            | Python project and dependency management  |
+| Ruff          | Python linting and formatting              |
+| Git           | Version control                            |
+| GitHub        | Source code hosting                        |
 
 
 ## 📂 Project Structure
@@ -109,16 +124,26 @@ The database also provides information for checking whether the combined weight 
 ```text
 Truck-Partner/
 │
+├── api/
+│   ├── __init__.py
+│   ├── database.py
+│   ├── main.py
+│   ├── models.py
+│   └── schemas.py
+│
 ├── cli/
 │   ├── __init__.py
 │   ├── cargoes.py
+│   ├── db.py
 │   ├── drivers.py
+│   ├── main.py
 │   ├── trips.py
+│   ├── truck_system.py
 │   └── trucks.py
 │
-├── db.py
-├── main.py
-├── truck_system.py
+├── database/
+│   ├── queries.sql
+│   └── schema.sql
 │
 ├── .env.example
 ├── .gitignore
@@ -130,26 +155,29 @@ Truck-Partner/
 
 ### Main components
 
-**`main.py`**
-Application entry point. Tests the PostgreSQL connection and starts the system.
+**`api/main.py`**
+FastAPI application entry point. Defines all REST endpoints and creates the database tables on startup.
 
-**`truck_system.py`**
+**`api/models.py`**
+SQLAlchemy ORM models (`Driver`, `Truck`, `Cargo`, `Trip`) and the `trip_cargo` association table, including relationships and check constraints.
+
+**`api/schemas.py`**
+Pydantic schemas used for request validation and response serialization, separated into `Base`, `Create`, and `Response` variants per resource.
+
+**`api/database.py`**
+Configures the SQLAlchemy engine and session, and exposes the `get_db()` dependency used by the API routes.
+
+**`cli/main.py`**
+Original CLI entry point. Tests the PostgreSQL connection and starts the CLI system.
+
+**`cli/truck_system.py`**
 Controls the CLI menus and navigation between the different areas of the application.
 
-**`db.py`**
-Creates PostgreSQL connections using credentials stored in environment variables.
+**`cli/db.py`**
+Creates raw `psycopg` PostgreSQL connections used by the CLI, using credentials stored in environment variables.
 
-**`cli/drivers.py`**
-Contains driver CRUD operations.
-
-**`cli/trucks.py`**
-Contains truck CRUD operations.
-
-**`cli/cargoes.py`**
-Contains cargo CRUD operations.
-
-**`cli/trips.py`**
-Contains trip creation, cargo assignment, trip details, and weight-checking operations.
+**`cli/drivers.py`, `cli/trucks.py`, `cli/cargoes.py`, `cli/trips.py`**
+Contain the original CRUD operations for each resource, kept as a record of the project's earlier CLI-only stage.
 
 
 ## 🗄️ Database Model
@@ -211,6 +239,38 @@ Trips
 0. Back
 ```
 
+
+## 🔗 API Endpoints
+
+```text
+GET    /                              Welcome message
+GET    /status                        API status and version
+
+GET    /drivers                       List all drivers
+GET    /drivers/{driver_id}           Get a driver by id
+POST   /drivers                       Create a driver
+
+GET    /trucks                        List all trucks
+GET    /trucks/{truck_id}             Get a truck by id
+POST   /trucks                        Create a truck
+
+GET    /cargoes                       List all cargoes
+GET    /cargoes/{cargo_id}            Get a cargo by id
+POST   /cargoes                       Create a cargo
+
+GET    /trips                         List all trips (with driver, truck, cargoes)
+GET    /trips/{trip_id}               Get a trip by id (with driver, truck, cargoes)
+POST   /trips                         Create a trip
+POST   /trips/{trip_id}/cargoes/{cargo_id}   Assign a cargo to a trip
+```
+
+Interactive documentation (Swagger UI) is available at `/docs` once the API is running.
+
+## ▶️ Running the API
+
+```bash
+uv run fastapi dev api/main.py
+```
 
 ## ⚙️ Installation
 
@@ -289,7 +349,9 @@ Database credentials are not stored directly in the Python source code.
 
 Truck-Partner loads PostgreSQL configuration from environment variables using `python-dotenv`.
 
-SQL operations use parameterized Psycopg queries:
+In the API, request data is validated with Pydantic before it reaches the database layer (e.g., weight and capacity fields must be positive, CPF and license plate fields have fixed length), and related resources are checked for existence before creating relationships (e.g., a trip cannot reference a non-existent driver or truck).
+
+In the CLI, SQL operations use parameterized Psycopg queries:
 
 ```python
 cur.execute(
@@ -322,16 +384,29 @@ Truck-Partner is being developed incrementally.
 * [x] Truck capacity checking
 * [x] CLI navigation
 
+### v0.2 — REST API (FastAPI)
+
+* [x] FastAPI application setup
+* [x] Create and list endpoints for drivers, trucks, cargoes, and trips
+* [x] Cargo assignment endpoint
+* [x] Pydantic request/response validation
+
+### v0.5 — ORM (SQLAlchemy)
+
+* [x] SQLAlchemy models for all resources
+* [x] Many-to-many relationship between trips and cargoes
+* [x] Database-level check constraints (positive weight/capacity)
+* [x] Dependency-injected database session
+
 ### Future Development
 
 Planned areas of expansion include:
 
-* [ ] REST API
-* [ ] ORM/database abstraction
-* [ ] Authentication and authorization
-* [ ] Automated testing
+* [ ] Complete CRUD (update and delete endpoints) in the API
+* [ ] Authentication and authorization (JWT)
+* [ ] Automated testing (pytest)
 * [ ] Docker containerization
-* [ ] CI/CD
+* [ ] CI/CD (GitHub Actions)
 * [ ] Expanded logistics data and business rules
 * [ ] Stops and rest tracking
 * [ ] Fuel records
@@ -354,6 +429,9 @@ The project focuses on:
 * Database constraints and relationships
 * CRUD operations
 * Many-to-many relationships
+* REST API design with FastAPI
+* ORM modeling with SQLAlchemy
+* Request/response validation with Pydantic
 * Separation of application responsibilities
 * Secure database configuration
 * Version control
@@ -362,9 +440,9 @@ The project focuses on:
 
 ## 📄 Version
 
-**Truck-Partner v0.1.0**
+**Truck-Partner v0.5.0**
 
-Current stage: **Python CLI + PostgreSQL**
+Current stage: **FastAPI REST API + SQLAlchemy ORM + PostgreSQL** (original CLI preserved in `cli/`)
 
 
 ## 👨‍💻 Author
